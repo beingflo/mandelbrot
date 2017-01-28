@@ -12,6 +12,13 @@ use input::InputHandler;
 
 fn main() {
     let display = glutin::WindowBuilder::new().build_glium().unwrap();
+    let window_size = {
+        let target = display.draw();
+        let (width, height) = target.get_dimensions();
+        target.finish().unwrap();
+        std::cmp::max(width, height)
+    };
+
 
     let mut input_handler = InputHandler::new();
 
@@ -22,17 +29,20 @@ fn main() {
 
     let program = make_program(&display);
 
-    let mut uniforms = Uniforms { num_iterations: 100, x_shift: -0.7, y_shift: -0.375, zoom: 1000.0 };
+    let mut uniforms = Uniforms { num_iterations: 100, window_size: window_size as i32, x_shift: -0.5, y_shift: 0.5, zoom: 0.3 };
 
     loop {
         let mut target = display.draw();
         input_handler.set_uniforms(&mut uniforms);
 
         target.clear_color(1.0, 1.0, 1.0, 0.0);
+
         target.draw(&vertex_buffer, &indices, &program,
                     &uniform!{  num_iterations: uniforms.num_iterations, zoom: uniforms.zoom,
+                                window_size: uniforms.window_size,
                                 x_shift: uniforms.x_shift, y_shift: uniforms.y_shift },
                     &Default::default()).unwrap();
+
         target.finish().unwrap();
 
         for e in display.poll_events() {
@@ -53,6 +63,7 @@ fn main() {
 
 pub struct Uniforms {
     num_iterations: i32,
+    window_size: i32,
     x_shift: f32,
     y_shift: f32,
     zoom: f32,

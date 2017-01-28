@@ -7,6 +7,8 @@ uniform float x_shift;
 uniform float y_shift;
 uniform float zoom;
 
+uniform int window_size;
+
 struct Complex {
     float a;
     float b;
@@ -40,12 +42,12 @@ int diverge(Complex a) {
 }
 
 void main() {
-    float x = (gl_FragCoord.x/zoom + x_shift) * 3;
-    float y = (gl_FragCoord.y/zoom + y_shift) * 3;
+    float x = ((gl_FragCoord.x/window_size)-0.5)/zoom + x_shift;
+    float y = ((gl_FragCoord.y/window_size)-0.5)/zoom + y_shift;
 
     int it = diverge(Complex(x, y));
     if(it < num_iterations) {
-        color = vec4(float(it*it)/num_iterations, float(it%19)/num_iterations, float(it%21)/num_iterations, 1.0);
+        color = vec4(0.0f, 0.0f, float(it)/num_iterations, 1.0);
     } else {
         color = vec4(0.0, 0.0, 0.0, 1.0);
     }

@@ -40,36 +40,34 @@ impl InputHandler {
     }
     pub fn set_uniforms(&mut self, uniforms: &mut Uniforms) {
         if self.keyset[0] {
-            uniforms.x_shift += 10.0 / uniforms.zoom;
+            uniforms.x_shift += 0.01/uniforms.zoom;
         }
         if self.keyset[1] {
-            uniforms.x_shift -= 10.0 / uniforms.zoom;
+            uniforms.x_shift -= 0.01/uniforms.zoom;
         }
         if self.keyset[2] {
-            uniforms.y_shift += 10.0 / uniforms.zoom;
+            uniforms.y_shift += 0.01/uniforms.zoom;
         }
         if self.keyset[3] {
-            uniforms.y_shift -= 10.0 / uniforms.zoom;
+            uniforms.y_shift -= 0.01/uniforms.zoom;
         }
         if self.keyset[4] {
             uniforms.zoom *= 1.01;
-            uniforms.zoom += 1.0;
         }
         if self.keyset[5] {
-            uniforms.y_shift -= 10.0 / uniforms.zoom;
             uniforms.zoom /= 1.01;
         }
         if self.keyset[6] {
             uniforms.num_iterations = (uniforms.num_iterations as f32 * 1.1) as i32 + 1;
+
             // Only trigger this once
             self.keyset[6] = false;
         }
         if self.keyset[7] {
             uniforms.num_iterations = (uniforms.num_iterations as f32 / 1.1) as i32;
+
             // Only trigger this once
             self.keyset[7] = false;
         }
-
-
     }
 }
