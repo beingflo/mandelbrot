@@ -1,5 +1,5 @@
 [package]
-name = "algen"
+name = "mandelbrot"
 version = "0.1.0"
 authors = ["Florian Marending <floriama@student.ethz.ch>"]
 
