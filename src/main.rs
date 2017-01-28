@@ -1,14 +1,19 @@
 #[macro_use]
 extern crate glium;
 
+mod input;
+
 use std::fs::File;
 use std::path::Path;
 use std::io::prelude::*;
 use glium::{ DisplayBuild, Surface, glutin };
 use glium::backend::glutin_backend::GlutinFacade;
+use input::InputHandler;
 
 fn main() {
     let display = glutin::WindowBuilder::new().build_glium().unwrap();
+
+    let mut input_handler = InputHandler::new();
 
     let data = get_vertex_data();
 
@@ -17,39 +22,39 @@ fn main() {
 
     let program = make_program(&display);
 
-    let mut num_iterations = 100;
-    let mut x_shift: f32 = -0.7;
-    let mut y_shift: f32 = -0.375;
-    let mut zoom: f32 = 1000.0;
+    let mut uniforms = Uniforms { num_iterations: 100, x_shift: -0.7, y_shift: -0.375, zoom: 1000.0 };
 
     loop {
         let mut target = display.draw();
 
         target.clear_color(1.0, 1.0, 1.0, 0.0);
         target.draw(&vertex_buffer, &indices, &program,
-                    &uniform!{  num_iterations: num_iterations, zoom: zoom,
-                                x_shift: x_shift, y_shift: y_shift },
+                    &uniform!{  num_iterations: uniforms.num_iterations, zoom: uniforms.zoom,
+                                x_shift: uniforms.x_shift, y_shift: uniforms.y_shift },
                     &Default::default()).unwrap();
         target.finish().unwrap();
 
         for e in display.poll_events() {
             use glium::glutin::Event;
-            match e {
-                Event::Closed => return,
-                Event::KeyboardInput(glutin::ElementState::Pressed,_,Some(glutin::VirtualKeyCode::Q)) => return,
-                Event::KeyboardInput(glutin::ElementState::Pressed,_,Some(glutin::VirtualKeyCode::Escape)) => return,
-                Event::KeyboardInput(glutin::ElementState::Pressed,_,Some(glutin::VirtualKeyCode::A)) => num_iterations = (num_iterations as f32 * 1.1) as i32 + 1,
-                Event::KeyboardInput(glutin::ElementState::Pressed,_,Some(glutin::VirtualKeyCode::Y)) => num_iterations = (num_iterations as f32 / 1.1) as i32,
-                Event::KeyboardInput(glutin::ElementState::Pressed,_,Some(glutin::VirtualKeyCode::Right)) => x_shift += 10.0/zoom,
-                Event::KeyboardInput(glutin::ElementState::Pressed,_,Some(glutin::VirtualKeyCode::Left)) => x_shift -= 10.0/zoom,
-                Event::KeyboardInput(glutin::ElementState::Pressed,_,Some(glutin::VirtualKeyCode::Up)) => y_shift += 10.0/zoom,
-                Event::KeyboardInput(glutin::ElementState::Pressed,_,Some(glutin::VirtualKeyCode::Down)) => y_shift -= 10.0/zoom,
-                Event::KeyboardInput(glutin::ElementState::Pressed,_,Some(glutin::VirtualKeyCode::L)) => zoom *= 1.01,
-                Event::KeyboardInput(glutin::ElementState::Pressed,_,Some(glutin::VirtualKeyCode::M)) => zoom /= 1.01,
-                _ => ()
+
+            let should_close: bool = match e {
+                Event::Closed => true,
+                Event::KeyboardInput(state, raw, code) => input_handler.keyinput(&mut uniforms, state, raw, code),
+                _ => false,
+            };
+
+            if should_close {
+                return;
             }
         }
     }
+}
+
+pub struct Uniforms {
+    num_iterations: i32,
+    x_shift: f32,
+    y_shift: f32,
+    zoom: f32,
 }
 
 fn get_vertex_data() -> Vec<Vertex> {
