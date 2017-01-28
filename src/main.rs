@@ -26,6 +26,7 @@ fn main() {
 
     loop {
         let mut target = display.draw();
+        input_handler.set_uniforms(&mut uniforms);
 
         target.clear_color(1.0, 1.0, 1.0, 0.0);
         target.draw(&vertex_buffer, &indices, &program,
@@ -39,7 +40,7 @@ fn main() {
 
             let should_close: bool = match e {
                 Event::Closed => true,
-                Event::KeyboardInput(state, raw, code) => input_handler.keyinput(&mut uniforms, state, raw, code),
+                Event::KeyboardInput(state, raw, code) => input_handler.keyinput(state, raw, code),
                 _ => false,
             };
 

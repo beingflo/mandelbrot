@@ -2,15 +2,15 @@ use glium::{ glutin };
 use Uniforms;
 
 pub struct InputHandler {
-    keyset: [bool; 6],
+    keyset: [bool; 8],
 }
 
 impl InputHandler {
     pub fn new() -> InputHandler {
-        InputHandler { keyset: [false; 6] }
+        InputHandler { keyset: [false; 8] }
     }
 
-    pub fn keyinput(&mut self, uniforms: &mut Uniforms, status: glutin::ElementState, raw: u8, code: Option<glutin::VirtualKeyCode>) -> bool {
+    pub fn keyinput(&mut self, status: glutin::ElementState, raw: u8, code: Option<glutin::VirtualKeyCode>) -> bool {
         use glium::glutin::{ VirtualKeyCode, ElementState };
 
         match (status, raw, code) {
@@ -25,20 +25,20 @@ impl InputHandler {
             (ElementState::Pressed, _, Some(VirtualKeyCode::Down)) => self.keyset[3] = true,
             (ElementState::Released, _, Some(VirtualKeyCode::Down)) => self.keyset[3] = false,
 
-            (ElementState::Pressed, _, Some(VirtualKeyCode::I)) => { 
-                uniforms.num_iterations = (uniforms.num_iterations as f32 * 1.1) as i32 + 1;
-            },
-            (ElementState::Pressed, _, Some(VirtualKeyCode::J)) => { 
-                uniforms.num_iterations = (uniforms.num_iterations as f32 / 1.1) as i32;
-            }, 
-
             (ElementState::Pressed, _, Some(VirtualKeyCode::W)) => self.keyset[4] = true,
             (ElementState::Released, _, Some(VirtualKeyCode::W)) => self.keyset[4] = false,
             (ElementState::Pressed, _, Some(VirtualKeyCode::S)) => self.keyset[5] = true,
             (ElementState::Released, _, Some(VirtualKeyCode::S)) => self.keyset[5] = false,
+
+            (ElementState::Pressed, _, Some(VirtualKeyCode::I)) => self.keyset[6] = true,
+            (ElementState::Pressed, _, Some(VirtualKeyCode::J)) => self.keyset[7] = true,
+
             (_, _, _) => (),
         };
 
+        false 
+    }
+    pub fn set_uniforms(&mut self, uniforms: &mut Uniforms) {
         if self.keyset[0] {
             uniforms.x_shift += 10.0 / uniforms.zoom;
         }
@@ -59,7 +59,17 @@ impl InputHandler {
             uniforms.y_shift -= 10.0 / uniforms.zoom;
             uniforms.zoom /= 1.01;
         }
+        if self.keyset[6] {
+            uniforms.num_iterations = (uniforms.num_iterations as f32 * 1.1) as i32 + 1;
+            // Only trigger this once
+            self.keyset[6] = false;
+        }
+        if self.keyset[7] {
+            uniforms.num_iterations = (uniforms.num_iterations as f32 / 1.1) as i32;
+            // Only trigger this once
+            self.keyset[7] = false;
+        }
 
-        false 
+
     }
 }
