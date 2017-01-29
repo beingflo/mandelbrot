@@ -28,27 +28,30 @@ float sq_dist(Complex a) {
     return a.a*a.a + a.b*a.b;
 }
 
-int diverge(Complex a) {
+float diverge(Complex a) {
     Complex z = Complex(0,0);
-    for(int i = 0; i < num_iterations; i++) {
+    int i;
+    for(i = 0; i < num_iterations; i++) {
         z = add_complex(mul_complex(z,z), a);
 
-        if(sq_dist(z) > 4) {
-            return i;
+        if(sq_dist(z) > 100) {
+            break;
         }
 
     }
-    return num_iterations;
+    float color = i + 1 - log(log(sqrt(sq_dist(z)))) / log(2);
+
+    if(i == num_iterations) {
+        color = 0.0f;
+    }
+
+    return color;
 }
 
 void main() {
     float x = ((gl_FragCoord.x/window_size)-0.5)/zoom + x_shift;
     float y = ((gl_FragCoord.y/window_size)-0.5)/zoom + y_shift;
 
-    int it = diverge(Complex(x, y));
-    if(it < num_iterations) {
-        color = vec4(0.0f, 0.0f, float(it)/num_iterations, 1.0);
-    } else {
-        color = vec4(0.0, 0.0, 0.0, 1.0);
-    }
+    float c = diverge(Complex(x, y));
+    color = vec4(c/num_iterations, 0.0f, 0.0f, 1.0);
 }
