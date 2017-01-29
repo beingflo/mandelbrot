@@ -2,7 +2,7 @@
 
 ## Screenshots
 ![full](screenshots/full.png)
-![valley](screenhots/valley.png)
+![valley](screenshots/valley.png)
 
 ### Building
 Install rust from [the Rust website](http    s://www.rust-lang.org/downloads.html).
