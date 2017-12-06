@@ -40,13 +40,13 @@ vec3 diverge(Complex a) {
 
     }
     vec3 res;
-    res.x = i + 1 - log(log(sq_dist(z))) / log(2);
+    res.x = i + 1 - log(log(sq_dist(z))) / log(2.0);
     res.x = 0.2f*res.x/num_iterations;
 
-    res.y = i + 1 - log(log(sqrt(sq_dist(z)))) / log(2);
+    res.y = i + 1 - log(log(sqrt(sq_dist(z)))) / log(2.0);
     res.y = res.y/num_iterations;
 
-    res.z = i + 1 - log(log(sq_dist(z))) / log(2);
+    res.z = i + 1 - log(log(sq_dist(z))) / log(2.0);
     res.z = 0.5f*res.z/num_iterations;
 
     if(i == num_iterations) {
