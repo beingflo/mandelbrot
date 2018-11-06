@@ -1,6 +1,5 @@
 # mandelbrot viewer
 
-## Screenshots
 ![full](screenshots/full.png)
 ![valley](screenshots/valley.png)
 
